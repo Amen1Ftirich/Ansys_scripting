@@ -1,0 +1,39 @@
+####################################################################
+# Scriptfile: Run_Sequential.lsf
+#
+# Description:
+# This file show how to run multiple simulations sequentially, to
+# run a parameter sweep.
+#
+####################################################################
+
+# Define sweep parameters
+thickness = linspace(50, 100, 10)*1e-9; # thickness of Si
+n = getnamed("T", "frequency points");
+
+T = matrix(n, 10);
+
+# Sweep
+for(i=1:10) {     # sweep over thickness
+    # Test if the project is in layout mode
+    if (!layoutmode) {
+        switchtolayout;
+    }
+    # Set the parameters
+    setnamed("Si", "y max", thickness(i));
+    
+    # Run simulation
+    run;
+    
+    # Get the results:
+    T(1:n, i) = -transmission("T");
+}
+
+f = getdata("T", "f");
+
+Result = matrixdataset("Transmission");
+Result.addparameter("lambda", c/f, "f", f);
+Result.addparameter("Thickness", thickness);
+Result.addattribute("T", T);
+
+visualize(Result);
