@@ -1,0 +1,80 @@
+switchtolayout;
+deleteall;
+
+# =========================
+# PERIODIC STRUCTURE
+# =========================
+addrect;
+set("name","Grating_sim");
+set("x",0);
+set("x span",0.5e-6);
+set("y",0);
+set("y span",0.5e-6);
+set("index",3.4);
+
+# =========================
+# FDTD REGION
+# =========================
+addfdtd;
+set("dimension","2D");
+
+set("x",0);
+set("x span",1e-6);
+
+set("y",0);
+set("y span",2e-6);
+
+set("x min bc","Periodic");
+set("x max bc","Periodic");
+
+set("y min bc","PML");
+set("y max bc","PML");
+
+# =========================
+# PLANE-WAVE SOURCE
+# =========================
+addplane;
+set("name","source");
+
+# Propagation is along y
+set("injection axis","y");
+set("direction","forward");
+
+set("x",0);
+set("x span",1e-6);
+
+# Notice: -0.6 um, not -6 um
+set("y",-0.6e-6);
+
+set("center wavelength",1.55e-6);
+set("wavelength span",0.5e-6);
+
+# =========================
+# TRANSMISSION MONITOR
+# =========================
+addpower;
+set("name","T_monitor");
+
+# Horizontal monitor measuring y-directed power
+set("monitor type","Linear X");
+
+set("x",0);
+set("x span",1e-6);
+set("y",0.6e-6);
+
+set("override global monitor settings",1);
+set("frequency points",100);
+
+# =========================
+# RUN AND EXTRACT RESULTS
+# =========================
+run;
+
+# Print all available results
+?getresult("T_monitor");
+
+# Obtain transmission
+T = getresult("T_monitor","T");
+
+# Display the dataset
+visualize(T);
